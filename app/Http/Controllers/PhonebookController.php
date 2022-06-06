@@ -16,7 +16,8 @@ class PhonebookController extends Controller
      */
     public function index()
     {
-        return response()->json(Phonebook::with('email', 'phone')->get());
+        $phonebook = Phonebook::with('email', 'phone')->get();
+        return view('phonebook')->with('phonebooks', $phonebook);
     }
 
     /**
