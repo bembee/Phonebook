@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Email;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -20,5 +21,10 @@ class DatabaseSeeder extends Seeder
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
+
+        \App\Models\Phonebook::factory(8)
+            ->has(\App\Models\Email::factory()->count(2))
+            ->has(\App\Models\Phone::factory()->count(3))
+            ->create();
     }
 }

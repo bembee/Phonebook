@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\PhonebookController;
+use App\Models\Phonebook;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +15,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [PhonebookController::class, 'index']);
+Route::get('/new', [PhonebookController::class, 'create']);
+Route::resource('phonebook', 'App\Http\Controllers\PhonebookController');

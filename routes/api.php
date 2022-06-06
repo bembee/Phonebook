@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\EmailController;
+use App\Http\Controllers\PhonebookController;
+use App\Http\Controllers\PhoneController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,3 +20,6 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+Route::apiResource('phonebook', PhonebookController::class);
+Route::apiResource('phone', PhoneController::class);
+Route::apiResource('email', EmailController::class);
