@@ -16,6 +16,12 @@
         width: 150px;
     }
 
+    .form-group.required .control-label:after {
+        content: "*";
+        color: red;
+
+    }
+
     .alert-info {
         padding: 10px;
         margin: 10px;

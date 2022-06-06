@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Email;
+use App\Models\Phone;
 use App\Models\Phonebook;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -27,7 +29,7 @@ class PhonebookController extends Controller
      */
     public function create()
     {
-        //
+        return view('new');
     }
 
     /**
@@ -38,7 +40,38 @@ class PhonebookController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'name' => 'required',
+            'photo' => 'required',
+            'address' => 'required',
+            'mailing_address' => '',
+        ]);
+
+        $fileName = time() . '.' . $request->photo->extension();
+        $request->photo->move(public_path('images'), $fileName);
+        $data["photo"] = "/images/" . $fileName;
+        if ($request->mailing_address == "") {
+            $data["mailing_address"] = $data["address"];
+        }
+
+        $phonebook = Phonebook::create($data);
+        $lastInsertID = $phonebook->id;
+        foreach ($request->email as $value) {
+            Email::firstOrCreate([
+                'email' => $value,
+                'phonebook_id' => $lastInsertID,
+            ]);
+        }
+
+        collect($request->phone)
+            ->filter()
+            ->each(function ($phone) use ($phonebook) {
+                Phone::firstOrCreate([
+                    'phone' => $phone,
+                    'phonebook_id' => $phonebook->id,
+                ]);
+            });
+        return redirect("/")->with('status', 'Successfully created');
     }
 
     /**
@@ -83,6 +116,8 @@ class PhonebookController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $phonebook = Phonebook::findOrFail($id);
+        $phonebook->delete();
+        return back()->with('status', 'Successfully deleted with all the connected data');
     }
 }
