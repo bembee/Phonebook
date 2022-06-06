@@ -42,7 +42,7 @@ class PhonebookController extends Controller
     {
         $data = $request->validate([
             'name' => 'required',
-            'photo' => 'required',
+            'photo' => 'required|image',
             'address' => 'required',
             'mailing_address' => '',
         ]);
@@ -93,7 +93,8 @@ class PhonebookController extends Controller
      */
     public function edit($id)
     {
-        //
+        $phonebook = Phonebook::findOrFail($id);
+        return view('edit', compact('phonebook'));
     }
 
     /**
@@ -105,7 +106,37 @@ class PhonebookController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $data = $request->validate([
+            'name' => 'required',
+            'photo' => 'required|image',
+            'address' => 'required',
+            'mailing_address' => '',
+        ]);
+        $fileName = time() . '.' . $request->photo->extension();
+        $request->photo->move(public_path('images'), $fileName);
+        $data["photo"] = "/images/" . $fileName;
+        if ($request->mailing_address == "") {
+            $data["mailing_address"] = $data["address"];
+        }
+
+        $phonebook = Phonebook::whereId($id)->update($data);
+        foreach ($request->email as $value) {
+            Email::firstOrCreate([
+                'email' => $value,
+                'phonebook_id' => $id,
+            ]);
+        }
+
+        collect($request->phone)
+            ->filter()
+            ->each(function ($phone) use ($id) {
+                Phone::firstOrCreate([
+                    'phone' => $phone,
+                    'phonebook_id' => $id,
+                ]);
+            });
+
+        return redirect("/")->with('status', 'Successfully modified');
     }
 
     /**

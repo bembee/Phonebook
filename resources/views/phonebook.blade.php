@@ -38,6 +38,9 @@
                 <td>{{ $phonebook->address }}</td>
                 <td>{{ $phonebook->mailing_address }}</td>
                 <td>
+                    <a href="{{ route('phonebook.edit', $phonebook->id)}}" class="btn btn-primary">Edit</a>
+                </td>
+                <td>
                     <form action="{{ route('phonebook.destroy', $phonebook->id) }}" method="POST">
                         @csrf
                         @method('DELETE')
